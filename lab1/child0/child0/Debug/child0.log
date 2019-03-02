@@ -1,0 +1,3 @@
+﻿  Source.cpp
+c:\users\nasta\source\repos\spovm\lab1\child0\child0\source.cpp(8): warning C4326: возвращаемый тип "main" должен быть "int", а не "void"
+  child0.vcxproj -> C:\Users\nasta\source\repos\spovm\lab1\child0\Debug\child0.exe

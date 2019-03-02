@@ -1,0 +1,6 @@
+﻿  Source.cpp
+c:\users\nasta\source\repos\spovm\lab1\child1\child1\source.cpp(8): warning C4326: возвращаемый тип "main" должен быть "int", а не "void"
+c:\users\nasta\source\repos\spovm\lab1\child1\child1\source.cpp(11): warning C4129: : неизвестная escape-последовательность
+c:\users\nasta\source\repos\spovm\lab1\child1\child1\source.cpp(14): warning C4129: _: неизвестная escape-последовательность
+c:\users\nasta\source\repos\spovm\lab1\child1\child1\source.cpp(30): warning C4129: =: неизвестная escape-последовательность
+  child1.vcxproj -> C:\Users\nasta\source\repos\spovm\lab1\child1\Debug\child1.exe

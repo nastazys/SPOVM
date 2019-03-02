@@ -1,0 +1,4 @@
+﻿  Source.cpp
+c:\users\nasta\source\repos\spovm\lab1\parent\parent\source.cpp(11): warning C4326: возвращаемый тип "main" должен быть "int", а не "void"
+c:\users\nasta\source\repos\spovm\lab1\parent\parent\source.cpp(45): warning C4101: lt: неиспользованная локальная переменная
+  parent.vcxproj -> C:\Users\nasta\source\repos\spovm\lab1\parent\Debug\parent.exe
