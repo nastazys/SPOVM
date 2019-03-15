@@ -10,7 +10,7 @@
 #include <string>
 using namespace std;
 
-bool remove_line(const char *filename, size_t index)
+bool removeLineFromFile(const char *filename, size_t index)
 {
 	std::vector<std::string> vec;
 	std::ifstream file(filename);
@@ -48,7 +48,7 @@ string scanTxt(fstream& stream)
 	WaitForSingleObject(readingFromFileEnable, INFINITE);
 	ResetEvent(readingFromFileEnable);
 	getline(stream, line);
-	remove_line("c:/Users/nasta/source/repos/spovm/lab2/strings.txt", 0);
+	removeLineFromFile("c:/Users/nasta/source/repos/spovm/lab2/strings.txt", 0);
 	SetEvent(readingFromFileEnable);
 	return line;
 }
@@ -75,10 +75,14 @@ void main()
 			WaitForSingleObject(writingToConsoleEnable, INFINITE);
 			if (!ResetEvent(writingToConsoleEnable))
 				return;
-			cout << str << endl;
+			for (auto ch : str)
+			{
+				cout << ch;
+			}
+			cout << endl;//<< str << endl;
 			if (!SetEvent(writingToConsoleEnable))
 				return;
-			Sleep(2500);
+			Sleep(1500);
 		}
 	}
 	catch (int i)

@@ -47,7 +47,6 @@ void deleteAllProcesses() {
 	copyJackPoem();
 	CloseHandle(writingToConsoleEnable);
 	CloseHandle(readingFromFileEnable);
-	cout << " THE END " << endl;
 	exit(0);
 }
 
@@ -66,8 +65,6 @@ int main(int args, char** argv) {
 
 	cout << "Enter to create new process: '+', to delete last created: '-', quit: 'q'" << endl;
 	while (true) {
-
-		ProcessInfo* performingProcess = nullptr;
 		char iSymbol;
 
 		if (_kbhit()) {
@@ -112,35 +109,7 @@ int main(int args, char** argv) {
 			break;
 		}
 		SetEvent(writingToConsoleEnable);
-
-		if ((performingProcess == nullptr) && (processes.size() > 0)) {
-			performingProcess = processes[0];
-		}
-
-		bool is_printing = false;
-		/*
-		for (int i = 0; i < processes.size(); i++) {
-
-			if (processes[i]->isRunning() == false) {
-				WaitForSingleObject(writingToConsoleEnable, INFINITE);
-				ResetEvent(writingToConsoleEnable);
-				cout << "Process " << i << " was closed independently." << endl;
-				SetEvent(writingToConsoleEnable);
-				processes.erase(processes.begin() + i);
-			}
-		}*/
-
-		
-		if (performingProcess != nullptr) {
-			if (WaitForSingleObject(performingProcess->getProcessHandle(), 400) == NULL) {
-				performingProcess = nullptr;
-			}
-		}
-		else {
-			Sleep(400);
-		}
 	}
 
-	copyJackPoem();
 	return 0;
 }
