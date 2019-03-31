@@ -1,3 +1,4 @@
 ﻿  Source.cpp
-c:\users\nasta\source\repos\spovm\lab3\lab3child0\lab3child0\source.cpp(42): warning C4302: 'type cast': truncation from 'const char *' to 'char'
+c:\users\nasta\source\repos\spovm\lab3\lab3child0\lab3child0\source.cpp(42): warning C4018: '<': signed/unsigned mismatch
+c:\users\nasta\source\repos\spovm\lab3\lab3child0\lab3child0\source.cpp(45): warning C4302: 'type cast': truncation from 'const char *' to 'char'
   lab3Child0.vcxproj -> C:\Users\nasta\source\repos\spovm\lab3\lab3Child0\Debug\lab3Child0.exe

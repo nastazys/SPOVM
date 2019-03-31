@@ -1,3 +1,4 @@
 ﻿  Source.cpp
-c:\users\nasta\source\repos\spovm\lab3\lab3parent\lab3parent\source.cpp(42): warning C4326: return type of 'main' should be 'int' instead of 'void'
+c:\users\nasta\source\repos\spovm\lab3\lab3parent\lab3parent\source.cpp(57): warning C4326: return type of 'main' should be 'int' instead of 'void'
+c:\users\nasta\source\repos\spovm\lab3\lab3parent\lab3parent\source.cpp(125): warning C4154: deletion of an array expression; conversion to pointer supplied
   lab3Parent.vcxproj -> C:\Users\nasta\source\repos\spovm\lab3\lab3Parent\Debug\lab3Parent.exe

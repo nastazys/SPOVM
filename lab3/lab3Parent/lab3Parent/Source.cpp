@@ -18,6 +18,16 @@ struct Weather
 
 };
 
+/*HANDLE CreateNamedPipe(
+  LPCTSTR lpName,   
+  DWORD   dwOpenMode,     
+  DWORD   dwPipeMode,      
+  DWORD   nMaxInstances,   
+  DWORD   nOutBufferSize,  
+  DWORD   nInBufferSize,   
+  DWORD   nDefaultTimeOut, 
+  LPSECURITY_ATTRIBUTES lpSecurityAttributes); */
+
 HANDLE hWeathPipe = CreateNamedPipe("\\\\.\\pipe\\WeatherSynchro",
 	PIPE_ACCESS_DUPLEX,
 	PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE | PIPE_WAIT,
@@ -35,8 +45,13 @@ DWORD ReadPipe(char* array)
 {
 	DWORD  cbRead;
 	ReadFile(hWeathPipe, array, 100, &cbRead, NULL);
+	if (array[0] == 'e' && array[1] == 'r' && array[2] == 'r' && array[3] == 'o' && array[4] == 'r')
+	{
+		throw 1;
+	}
 	return cbRead;
 }
+
 
 void main(int argc, char* argv[])
 {
@@ -66,38 +81,50 @@ void main(int argc, char* argv[])
 	}
 	if (!ConnectNamedPipe(hWeathPipe, NULL))
 		cout << "er";
-	Weather currentWeath;
 	char k = '+';
-	string city = "Minsk";
+	char message[] = "";
 	while (k != 'q')
 	{
-		system("cls");
-		cout << "Enter city: ";
-		cin >> city;
-		WritePipe(city);
+		try {
+			system("cls");
+			string city = "";
+			Weather currentWeath;
+			cout << "Enter city: ";
+			cin >> city;
+			WritePipe(city);
+			ReadPipe(message);
+			WritePipe("description");
+			ReadPipe(currentWeath.description);
+			cout << "Weather info: " << currentWeath.description << endl;
 
-		WritePipe("description");
-		ReadPipe(currentWeath.description);
-		cout << "Weather info: " << currentWeath.description << endl;
+			WritePipe("temp");
+			ReadPipe(currentWeath.temp);
+			cout << "Current temperature: " << (atoi(currentWeath.temp) - 273) << " 'C" << endl;
 
-		WritePipe("temp");
-		ReadPipe(currentWeath.temp);
-		cout << "Current temperature: " << currentWeath.temp << endl;
+			WritePipe("humidity");
+			ReadPipe(currentWeath.humidity);
+			cout << "Humidity: " << currentWeath.humidity << "%" << endl;
 
-		WritePipe("humidity");
-		ReadPipe(currentWeath.humidity);
-		cout << "Humidity: " << currentWeath.humidity << endl;
-
-		WritePipe("pressure");
-		ReadPipe(currentWeath.pressure);
-		cout << "Pressure: " << currentWeath.pressure << endl;
-		cout << "Press q to exit or + to continue: ";
-		cin >> k;
+			WritePipe("pressure");
+			ReadPipe(currentWeath.pressure);
+			cout << "Pressure: " << currentWeath.pressure << " hPa" << endl;
+			cout << "Press q to exit or + to continue: ";
+			cin >> k;
+		}
+		catch (int e)
+		{
+			switch (e) {
+			case 1: {
+				Sleep(2500);
+				continue;
+				break;
+			}
+			}
+		}
 	}
-
+	delete[] message;
 	CloseHandle(hWeathPipe);
 	for (int i = 0; i < numProcs; i++)
 		CloseHandle(ProcInfo[i].hProcess);
-	system("pause");
 	return;
 }
