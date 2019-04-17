@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 #include <sstream>
+#include <conio.h>
 
 using namespace std;
 
@@ -30,7 +31,6 @@ struct downloadInfo
 	double totalToDownload;
 	double nowDownloaded;
 	double lastDownloaded;
-	COORD position;
 };
 
 CRITICAL_SECTION csConsole;
@@ -44,17 +44,20 @@ int downloadProgress(void* ptr, double TotalToDownload, double NowDownloaded, do
 	if (progress->nowDownloaded / 1024 != 0)
 	{
 		progress->lastDownloaded = progress->nowDownloaded / 1024;
+
+		EnterCriticalSection(&csConsole);
+
 		HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 		CONSOLE_SCREEN_BUFFER_INFO curPosition;
 		GetConsoleScreenBufferInfo(hConsole, &curPosition);
 		COORD newPosition = curPosition.dwCursorPosition;
 		newPosition.Y += 17;
 		newPosition.X = 0;
-
-		EnterCriticalSection(&csConsole);
 		SetConsoleCursorPosition(hConsole, newPosition);
+
 		printf("Thread #%d is downloading file: %d kbytes \n", GetThreadId(GetCurrentThread()), (int)progress->lastDownloaded);
 		SetConsoleCursorPosition(hConsole, curPosition.dwCursorPosition);
+
 		LeaveCriticalSection(&csConsole);
 	}
 	progress->count+=1;
@@ -79,11 +82,6 @@ void downloader(struct downloadInfo* startInfo)
 			curl_easy_setopt(curl, CURLOPT_URL, startInfo->url.c_str());
 			curl_easy_setopt(curl, CURLOPT_WRITEDATA, outFile);
 			curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writeFile);
-			
-			HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-			CONSOLE_SCREEN_BUFFER_INFO curPosition;
-			GetConsoleScreenBufferInfo(hConsole, &curPosition);
-			startInfo->position = curPosition.dwCursorPosition;
 
 			curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 0L); //to make progress function actually called
 			curl_easy_setopt(curl, CURLOPT_PROGRESSFUNCTION, downloadProgress);
@@ -128,10 +126,28 @@ vector <string> getCommand()
 	return result;
 }
 
+vector<HANDLE> threads;
+
+void deleteAllThreads()
+{
+	for (auto thr : threads)
+	{
+		CloseHandle(thr);
+	}
+}
+BOOL WINAPI ConsoleHandler(DWORD CEvent) {
+
+	switch (CEvent) {
+	case CTRL_CLOSE_EVENT:
+		deleteAllThreads();
+	}
+	return TRUE;
+}
 
 int main()
 {
-	vector<HANDLE> threads;
+	//vector<HANDLE> threads;
+	SetConsoleCtrlHandler((PHANDLER_ROUTINE)ConsoleHandler, TRUE);
 	vector <downloadInfo> info;
 	InitializeCriticalSection(&csConsole);
 	while (1)
@@ -140,42 +156,40 @@ int main()
 		HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 		CONSOLE_SCREEN_BUFFER_INFO curPosition;
 		GetConsoleScreenBufferInfo(hConsole, &curPosition);
-		//EnterCriticalSection(&csConsole);
-		if (curPosition.dwCursorPosition.Y == 12)
+		
+		if (_kbhit())
 		{
-			system("cls");
-			curPosition.dwCursorPosition.Y = 0;
-			SetConsoleCursorPosition(hConsole, curPosition.dwCursorPosition);
-		}
-		vector<string> command = getCommand();
-		//LeaveCriticalSection(&csConsole);
-		if (command[0] == "exit")
-		{
-			for (auto thr : threads)
+			EnterCriticalSection(&csConsole);
+			if (curPosition.dwCursorPosition.Y == 12)
 			{
-				CloseHandle(thr);
+				system("cls");
+				curPosition.dwCursorPosition.Y = 0;
+				SetConsoleCursorPosition(hConsole, curPosition.dwCursorPosition);
 			}
-			return 0;
-		}
-		if (command[0] == "down")
-		{
-			tempinfo.fileName = command[1];
-			tempinfo.url = command[2];
-			info.push_back(tempinfo);
-			threads.push_back(CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)downloader, &info[threads.size()], 0, NULL));
-			if (!threads[threads.size() - 1])
+			vector<string> command = getCommand();
+			LeaveCriticalSection(&csConsole);
+			if (command[0] == "exit")
 			{
-				EnterCriticalSection(&csConsole);
-				cout << "CreateThread error!" << endl;
-				LeaveCriticalSection(&csConsole);
+				deleteAllThreads();
+				return 0;
+			}
+			if (command[0] == "down")
+			{
+				tempinfo.fileName = command[1];
+				tempinfo.url = command[2];
+				info.push_back(tempinfo);
+				threads.push_back(CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)downloader, &info[threads.size()], 0, NULL));
+				if (!threads[threads.size() - 1])
+				{
+					EnterCriticalSection(&csConsole);
+					cout << "CreateThread error!" << endl;
+					LeaveCriticalSection(&csConsole);
+				}
 			}
 		}
 		//WaitForSingleObject(threads[0], INFINITE);
 	}
-	for (auto thr : threads)
-	{
-		CloseHandle(thr);
-	}
+	deleteAllThreads();
 	system("pause");
 	return 0;
 }
