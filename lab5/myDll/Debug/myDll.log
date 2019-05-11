@@ -1,0 +1,8 @@
+﻿  stdafx.cpp
+  dllmain.cpp
+  myDll.cpp
+c:\users\nasta\source\repos\mydll\mydll.cpp(57): warning C4018: '<': signed/unsigned mismatch
+  my_wstr.cpp
+  Generating Code...
+     Creating library C:\Users\nasta\source\repos\myDll\Debug\myDll.lib and object C:\Users\nasta\source\repos\myDll\Debug\myDll.exp
+  myDll.vcxproj -> C:\Users\nasta\source\repos\myDll\Debug\myDll.dll
